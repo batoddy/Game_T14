@@ -132,5 +132,4 @@ python main_gui.py
 ## TODO
 
 - [ ] Alpha-beta pruning implementation (`bot.py` → `alphabeta_decision`)
-- [ ] GUI interface
 - [ ] Report

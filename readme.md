@@ -113,6 +113,22 @@ Bot that selects optimal moves using the minimax algorithm.
 
 The `main_gui_reference.py` file contains the complete game flow with detailed comments explaining every function call, return value, and how to use them in a GUI. Use it as your reference when building the GUI.
 
+##  GUI Interface
+
+A GUI was implemented using Tkinter.
+
+Features:
+- Interactive board display
+- Clickable moves
+- Real-time score updates
+- Bot integration using Minimax
+- Game over popup
+
+Run the GUI:
+
+```bash
+python main_gui.py
+
 ## TODO
 
 - [ ] Alpha-beta pruning implementation (`bot.py` → `alphabeta_decision`)

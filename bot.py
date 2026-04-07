@@ -109,4 +109,95 @@ class GameBot:
         return best_value
 
     def alphabeta_decision(self, state, max_depth, bot_player):
-        pass
+        start_time = time.time()
+
+        stats = {"nodes_generated": 0, "nodes_evaluated": 0, "move_time": 0}
+
+        root = TreeNode(state=state, move=None, parent=None, depth=0)
+        stats["nodes_generated"] += 1
+
+        best_move = None
+        best_value = float("-inf")
+
+        alpha = float("-inf")
+        beta = float("inf")
+
+        legal_moves = get_legal_moves(state)
+        for move in legal_moves:
+            new_state = apply_move(state, move)
+            child_node = root.create_child(new_state, move, root, 1)
+            stats["nodes_generated"] += 1
+
+            value = self.evaluate_node_ab(
+                child_node, max_depth, bot_player, stats, alpha, beta
+            )
+
+            if value > best_value:
+                best_value = value
+                best_move = move
+
+            if best_value > alpha:
+                alpha = best_value
+
+        root.value = best_value
+
+        elapsed = time.time() - start_time
+        stats["move_time"] = elapsed
+
+        return best_move, best_value, stats, root
+
+    def evaluate_node_ab(self, node, max_depth, bot_player, stats, alpha, beta):
+        legal_moves = get_legal_moves(node.state)
+
+        # Terminal veya depth limit
+        if not legal_moves or node.depth >= max_depth:
+            node.value = evaluate_state(node.state, bot_player)
+            stats["nodes_evaluated"] += 1
+            return node.value
+
+        # Bot'un turu -> maximize
+        if node.state.turn == bot_player:
+            best_value = float("-inf")
+
+            for move in legal_moves:
+                new_state = apply_move(node.state, move)
+                new_node = node.create_child(new_state, move, node, node.depth + 1)
+                stats["nodes_generated"] += 1
+
+                value = self.evaluate_node_ab(
+                    new_node, max_depth, bot_player, stats, alpha, beta
+                )
+
+                if value > best_value:
+                    best_value = value
+
+                if best_value > alpha:
+                    alpha = best_value
+
+                if beta <= alpha:
+                    break
+
+        # Rakibin turu -> minimize
+        else:
+            best_value = float("inf")
+
+            for move in legal_moves:
+                new_state = apply_move(node.state, move)
+                new_node = node.create_child(new_state, move, node, node.depth + 1)
+                stats["nodes_generated"] += 1
+
+                value = self.evaluate_node_ab(
+                    new_node, max_depth, bot_player, stats, alpha, beta
+                )
+
+                if value < best_value:
+                    best_value = value
+
+                if best_value < beta:
+                    beta = best_value
+
+                if beta <= alpha:
+                    break
+
+        node.value = best_value
+        return best_value
